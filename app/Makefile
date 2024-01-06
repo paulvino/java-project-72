@@ -24,7 +24,4 @@ report:
 lint:
 	@./gradlew checkstyleMain
 
-update-deps:
-	@./gradlew useLatestVersions
-
 .PHONY: build
