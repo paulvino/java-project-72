@@ -1,7 +1,10 @@
 package hexlet.code;
 
-import io.javalin.Javalin;
+import hexlet.code.controller.RootController;
+import hexlet.code.repository.BaseRepository;
 
+import hexlet.code.util.NamedRoutes;
+import io.javalin.Javalin;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -10,13 +13,30 @@ import java.sql.SQLException;
 import java.util.stream.Collectors;
 
 import com.zaxxer.hikari.HikariConfig;
-//import com.zaxxer.hikari.HikariDataSource;
+import com.zaxxer.hikari.HikariDataSource;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class App {
 
+    private static final String DEFAULT_PORT = "7070";
+    private static final String DEFAULT_JDBC_URL = "jdbc:h2:mem:project;DB_CLOSE_DELAY=-1;";
+    private static final String SCHEMA_FILE = "schema.sql";
+
+    public static void main(String[] args) throws IOException, SQLException {
+        var app = getApp();
+        var port = getPort();
+        app.start(port);
+    }
+
     private static int getPort() {
-        String port = System.getenv().getOrDefault("PORT", "7070");
+        String port = System.getenv().getOrDefault("PORT", DEFAULT_PORT);
         return Integer.valueOf(port);
+    }
+
+    public static String getJdbcUrl() {
+        String jdbcUrl = System.getenv().getOrDefault("JDBC_DATABASE_URL", DEFAULT_JDBC_URL);
+        return jdbcUrl;
     }
 
     private static String readResourceFile(String fileName) throws IOException {
@@ -26,22 +46,19 @@ public class App {
         }
     }
 
-    public static void main(String[] args) throws IOException, SQLException {
-        var app = getApp();
-        app.start(getPort());
-    }
 
     public static Javalin getApp() throws IOException, SQLException {
         var hikariConfig = new HikariConfig();
-        hikariConfig.setJdbcUrl("jdbc:h2:mem:hexlet_project;DB_CLOSE_DELAY=-1;");
+        hikariConfig.setJdbcUrl(getJdbcUrl());
 
-//        var dataSource = new HikariDataSource(hikariConfig);
-//        var sql = readResourceFile("schema.sql");
-//
-//        try (var connection = dataSource.getConnection();
-//             var statement = connection.createStatement()) {
-//            statement.execute(sql);
-//        }
+        var dataSource = new HikariDataSource(hikariConfig);
+        BaseRepository.dataSource = dataSource;
+        var sql = readResourceFile(SCHEMA_FILE);
+
+        try (var connection = dataSource.getConnection();
+             var statement = connection.createStatement()) {
+            statement.execute(sql);
+        }
 
         var app = Javalin.create(config -> {
             config.plugins.enableDevLogging();
@@ -51,7 +68,7 @@ public class App {
             ctx.contentType("text/html; charset=utf-8");
         });
 
-        app.get("/", ctx -> ctx.result("Hello, World"));
+        app.get(NamedRoutes.rootPath(), RootController::index);
 
         return app;
     }
