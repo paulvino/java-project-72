@@ -54,10 +54,14 @@ public class App {
 
     public static Javalin getApp() throws IOException, SQLException {
         var hikariConfig = new HikariConfig();
-        hikariConfig.setJdbcUrl(getJdbcUrl());
-        hikariConfig.setUsername(JDBC_DATABASE_USERNAME);
-        hikariConfig.setPassword(JDBC_DATABASE_PASSWORD);
-
+        var dataBaseUrl = getJdbcUrl();
+        if (dataBaseUrl == null || dataBaseUrl.equals(DEFAULT_JDBC_URL)) {
+            hikariConfig.setJdbcUrl(dataBaseUrl);
+        } else {
+            hikariConfig.setUsername(JDBC_DATABASE_USERNAME);
+            hikariConfig.setPassword(JDBC_DATABASE_PASSWORD);
+            hikariConfig.setJdbcUrl(dataBaseUrl);
+        }
 
         var dataSource = new HikariDataSource(hikariConfig);
         var url = App.class.getClassLoader().getResource("schema.sql");
