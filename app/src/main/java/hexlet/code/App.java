@@ -6,11 +6,11 @@ import hexlet.code.repository.BaseRepository;
 import hexlet.code.util.NamedRoutes;
 import io.javalin.Javalin;
 import java.io.BufferedReader;
-import java.io.File;
+//import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
+//import java.nio.file.Files;
 import java.sql.SQLException;
 import java.util.stream.Collectors;
 
@@ -64,10 +64,11 @@ public class App {
         }
 
         var dataSource = new HikariDataSource(hikariConfig);
-        var url = App.class.getClassLoader().getResource(SCHEMA_FILE);
-        var file = new File(url.getFile());
-        var sql = Files.lines(file.toPath())
-                .collect(Collectors.joining("\n"));
+//        var url = App.class.getClassLoader().getResource(SCHEMA_FILE);
+//        var file = new File(url.getFile());
+//        var sql = Files.lines(file.toPath())
+//                .collect(Collectors.joining("\n"));
+        var sql = readResourceFile(SCHEMA_FILE);
 
         try (var connection = dataSource.getConnection();
              var statement = connection.createStatement()) {
