@@ -23,7 +23,10 @@ public class App {
 
     private static final String DEFAULT_PORT = "7070";
     private static final String DEFAULT_JDBC_URL = "jdbc:h2:mem:project;DB_CLOSE_DELAY=-1;";
-    private static final String SCHEMA_FILE = "schema.sql";
+    private  static final String JDBC_DATABASE_URL = "JDBC_DATABASE_URL";
+    private static final String JDBC_DATABASE_PASSWORD = "JDBC_DATABASE_PASSWORD";
+    private static final String JDBC_DATABASE_USERNAME = "JDBC_DATABASE_USERNAME";
+//    private static final String SCHEMA_FILE = "schema.sql";
 
     public static void main(String[] args) throws IOException, SQLException {
         var app = getApp();
@@ -37,7 +40,7 @@ public class App {
     }
 
     public static String getJdbcUrl() {
-        String jdbcUrl = System.getenv().getOrDefault("JDBC_DATABASE_URL", DEFAULT_JDBC_URL);
+        String jdbcUrl = System.getenv().getOrDefault(JDBC_DATABASE_URL, DEFAULT_JDBC_URL);
         return jdbcUrl;
     }
 
@@ -52,6 +55,9 @@ public class App {
     public static Javalin getApp() throws IOException, SQLException {
         var hikariConfig = new HikariConfig();
         hikariConfig.setJdbcUrl(getJdbcUrl());
+        hikariConfig.setUsername(JDBC_DATABASE_USERNAME);
+        hikariConfig.setPassword(JDBC_DATABASE_PASSWORD);
+
 
         var dataSource = new HikariDataSource(hikariConfig);
         var url = App.class.getClassLoader().getResource("schema.sql");
