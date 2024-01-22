@@ -26,7 +26,7 @@ public class App {
     private  static final String JDBC_DATABASE_URL = "JDBC_DATABASE_URL";
     private static final String JDBC_DATABASE_PASSWORD = "JDBC_DATABASE_PASSWORD";
     private static final String JDBC_DATABASE_USERNAME = "JDBC_DATABASE_USERNAME";
-//    private static final String SCHEMA_FILE = "schema.sql";
+    private static final String SCHEMA_FILE = "schema.sql";
 
     public static void main(String[] args) throws IOException, SQLException {
         var app = getApp();
@@ -64,11 +64,10 @@ public class App {
         }
 
         var dataSource = new HikariDataSource(hikariConfig);
-        var url = App.class.getClassLoader().getResource("schema.sql");
+        var url = App.class.getClassLoader().getResource(SCHEMA_FILE);
         var file = new File(url.getFile());
         var sql = Files.lines(file.toPath())
                 .collect(Collectors.joining("\n"));
-//        var sql = readResourceFile(SCHEMA_FILE);
 
         try (var connection = dataSource.getConnection();
              var statement = connection.createStatement()) {
