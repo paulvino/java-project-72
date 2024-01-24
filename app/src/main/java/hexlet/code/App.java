@@ -1,21 +1,23 @@
 package hexlet.code;
 
+import gg.jte.ContentType;
+import gg.jte.TemplateEngine;
+import gg.jte.resolve.ResourceCodeResolver;
 import hexlet.code.controller.RootController;
 import hexlet.code.repository.BaseRepository;
 
 import hexlet.code.util.NamedRoutes;
 import io.javalin.Javalin;
 import java.io.BufferedReader;
-//import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-//import java.nio.file.Files;
 import java.sql.SQLException;
 import java.util.stream.Collectors;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import io.javalin.rendering.template.JavalinJte;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -51,6 +53,13 @@ public class App {
         }
     }
 
+    private static TemplateEngine createTemplateEngine() {
+        ClassLoader classLoader = App.class.getClassLoader();
+        ResourceCodeResolver codeResolver = new ResourceCodeResolver("templates", classLoader);
+        TemplateEngine templateEngine = TemplateEngine.create(codeResolver, ContentType.Html);
+        return templateEngine;
+    }
+
 
     public static Javalin getApp() throws IOException, SQLException {
         var hikariConfig = new HikariConfig();
@@ -76,6 +85,8 @@ public class App {
         }
 
         BaseRepository.dataSource = dataSource;
+
+        JavalinJte.init(createTemplateEngine());
 
         var app = Javalin.create(config -> {
             config.plugins.enableDevLogging();
