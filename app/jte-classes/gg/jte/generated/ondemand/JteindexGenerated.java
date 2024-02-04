@@ -1,19 +1,39 @@
 package gg.jte.generated.ondemand;
+import hexlet.code.util.NamedRoutes;
+import hexlet.code.dto.BasePage;
 public final class JteindexGenerated {
 	public static final String JTE_NAME = "index.jte";
-	public static final int[] JTE_LINE_INFO = {0,0,0,0,0,3,3,12,12,12,12,13,13,13,13,13,13,13,13};
-	public static void render(gg.jte.html.HtmlTemplateOutput jteOutput, gg.jte.html.HtmlInterceptor jteHtmlInterceptor) {
+	public static final int[] JTE_LINE_INFO = {0,0,1,2,2,2,4,4,6,6,7,7,7,7,7,7,7,7,7,12,12,13,13,13,13,14,14,14,16,16,54,54,54,54,54,2,2,2,2};
+	public static void render(gg.jte.html.HtmlTemplateOutput jteOutput, gg.jte.html.HtmlInterceptor jteHtmlInterceptor, BasePage page) {
+		jteOutput.writeContent("\n");
 		gg.jte.generated.ondemand.layout.JtepageGenerated.render(jteOutput, jteHtmlInterceptor, new gg.jte.html.HtmlContent() {
 			public void writeTo(gg.jte.html.HtmlTemplateOutput jteOutput) {
-				jteOutput.writeContent("\n    <body>\n        <div class=\"col-lg-8 mx-auto p-4 py-md-5\">\n            <main>\n                <h1 class=\"text-body-emphasis\">Hello World</h1>\n                <p>Javalin + jte</p>\n            </main>\n        </div>\n    </body>\n    ");
+				jteOutput.writeContent("\n    <form");
+				var __jte_html_attribute_0 = NamedRoutes.urlsPath();
+				if (gg.jte.runtime.TemplateUtils.isAttributeRendered(__jte_html_attribute_0)) {
+					jteOutput.writeContent(" action=\"");
+					jteOutput.setContext("form", "action");
+					jteOutput.writeUserContent(__jte_html_attribute_0);
+					jteOutput.setContext("form", null);
+					jteOutput.writeContent("\"");
+				}
+				jteOutput.writeContent(" method=\"post\">\n        <div>\n            <div class=\"container\">\n                <div class=\"row justify-content-center\">\n\n                    ");
+				if (page != null) {
+					jteOutput.writeContent("\n                        <div class=\"alert alert-");
+					jteOutput.setContext("div", "class");
+					jteOutput.writeUserContent(page.getFlashType());
+					jteOutput.setContext("div", null);
+					jteOutput.writeContent("\" role=\"alert\">\n                            ");
+					jteOutput.setContext("div", null);
+					jteOutput.writeUserContent(page.getFlash());
+					jteOutput.writeContent("\n                        </div>\n                    ");
+				}
+				jteOutput.writeContent("\n\n                    <div class=\"col-10\">\n                        <h1 class=\"display-3\">Анализатор страниц</h1>\n                        <p class=\"lead\">\n                            Бесплатно проверяйте сайты на\n                            <a href=\"https://ru.wikipedia.org/wiki/Поисковая_оптимизация\">SEO</a>\n                            пригодность\n                        </p>\n\n                        <form>\n                            <div class=\"row\">\n                                <div class=\"col-md-10 form-floating\">\n                                    <input type=\"text\"\n                                           class=\"form-control form-control-lg text-start\"\n                                           required name=\"url\"\n                                           id=\"urlInput\"\n                                           placeholder=\"Ваша ссылка (до 100 символов)\"\n                                           maxlength=\"100\">\n                                    <label for=\"urlInput\" style=\"margin-left: 12px\">Ваша ссылка (до 100 символов)</label>\n                                </div>\n                                <div class=\"col-auto\">\n                                    <button type=\"submit\" class=\"btn btn-primary btn-lg\">Проверить</button>\n                                </div>\n                            </div>\n                            <div class=\"row\">\n                                <p class=\"lead text-body-secondary\">\n                                    <small>\n                                        Пример: https://www.example.com\n                                    </small>\n                                </p>\n                            </div>\n                        </form>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </form>\n");
 			}
-		}, null, new gg.jte.html.HtmlContent() {
-			public void writeTo(gg.jte.html.HtmlTemplateOutput jteOutput) {
-				jteOutput.writeContent("\n    ");
-			}
-		});
+		}, null, null);
 	}
 	public static void renderMap(gg.jte.html.HtmlTemplateOutput jteOutput, gg.jte.html.HtmlInterceptor jteHtmlInterceptor, java.util.Map<String, Object> params) {
-		render(jteOutput, jteHtmlInterceptor);
+		BasePage page = (BasePage)params.get("page");
+		render(jteOutput, jteHtmlInterceptor, page);
 	}
 }

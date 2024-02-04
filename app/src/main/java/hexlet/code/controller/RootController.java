@@ -1,17 +1,15 @@
 package hexlet.code.controller;
 
-import hexlet.code.dto.UrlPage;
-import hexlet.code.model.Url;
-import io.javalin.http.Context;
+import hexlet.code.dto.BasePage;
 
-//import java.sql.Timestamp;
+import io.javalin.http.Context;
 import java.util.Collections;
 
 public class RootController {
     public static void index(Context ctx) {
-        var url = new Url("name");
-        var header = "Тестовый header для проверки";
-        var page = new UrlPage(url, header);
+        var page = new BasePage();
+        page.setFlash(ctx.consumeSessionAttribute("flash"));
+        page.setFlashType(ctx.consumeSessionAttribute("flash-type"));
         ctx.render("index.jte", Collections.singletonMap("page", page));
     }
 }

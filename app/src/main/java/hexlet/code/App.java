@@ -4,6 +4,7 @@ import gg.jte.ContentType;
 import gg.jte.TemplateEngine;
 import gg.jte.resolve.ResourceCodeResolver;
 import hexlet.code.controller.RootController;
+import hexlet.code.controller.UrlController;
 import hexlet.code.repository.BaseRepository;
 
 import hexlet.code.util.NamedRoutes;
@@ -29,6 +30,7 @@ public class App {
     private static final String JDBC_DATABASE_PASSWORD = "JDBC_DATABASE_PASSWORD";
     private static final String JDBC_DATABASE_USERNAME = "JDBC_DATABASE_USERNAME";
     private static final String SCHEMA_FILE = "schema.sql";
+
 
     public static void main(String[] args) throws IOException, SQLException {
         var app = getApp();
@@ -60,7 +62,6 @@ public class App {
         return templateEngine;
     }
 
-
     public static Javalin getApp() throws IOException, SQLException {
         var hikariConfig = new HikariConfig();
         var dataBaseUrl = getJdbcUrl();
@@ -73,10 +74,6 @@ public class App {
         }
 
         var dataSource = new HikariDataSource(hikariConfig);
-//        var url = App.class.getClassLoader().getResource(SCHEMA_FILE);
-//        var file = new File(url.getFile());
-//        var sql = Files.lines(file.toPath())
-//                .collect(Collectors.joining("\n"));
         var sql = readResourceFile(SCHEMA_FILE);
 
         try (var connection = dataSource.getConnection();
@@ -86,17 +83,17 @@ public class App {
 
         BaseRepository.dataSource = dataSource;
 
-        JavalinJte.init(createTemplateEngine());
-
         var app = Javalin.create(config -> {
             config.plugins.enableDevLogging();
         });
 
-        app.before(ctx -> {
-            ctx.contentType("text/html; charset=utf-8");
-        });
+
+        JavalinJte.init(createTemplateEngine());
 
         app.get(NamedRoutes.rootPath(), RootController::index);
+        app.get(NamedRoutes.urlsPath(), UrlController::index);
+        app.get(NamedRoutes.urlPath("{id}"), UrlController::show);
+        app.post(NamedRoutes.urlsPath(), UrlController::create);
 
         return app;
     }
