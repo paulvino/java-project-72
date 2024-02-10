@@ -114,7 +114,7 @@ public class AppTest {
         var url = new Url(URL_SIMPLE, time);
         UrlRepository.save(url);
         JavalinTest.test(app, (server, client) -> {
-            var urlId = url.getId().toString();
+            var urlId = url.getId();
             var response = client.get(NamedRoutes.urlPath(urlId));
             assertThat(response.code()).isEqualTo(200);
             assertThat(response.body().string()).contains(
@@ -128,7 +128,7 @@ public class AppTest {
     @Test
     public void testNotFoundUrl() {
         JavalinTest.test(app, (server, client) -> {
-            var response = client.get(NamedRoutes.urlPath("9999999999"));
+            var response = client.get(NamedRoutes.urlPath(99999999999999999L));
             assertThat(response.code()).isEqualTo(404);
         });
     }
