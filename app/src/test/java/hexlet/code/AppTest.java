@@ -1,11 +1,16 @@
 package hexlet.code;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 
 import hexlet.code.model.Url;
 import hexlet.code.repository.UrlRepository;
 import hexlet.code.util.NamedRoutes;
+import hexlet.code.util.NormalizedUrl;
 import hexlet.code.util.Time;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,7 +27,7 @@ public class AppTest {
     private static final String URL_WITH_PORT = "https://example.com:8080";
     private static final String URL_LONG = "https://example.com:8080/example/unnesessary/long/url/address";
     private static final String URL_INCORRECT = "123QWE";
-    private static final String URL_FOR_PASTING = "url=[%s]";
+    private static final String URL_WRAPPER = "url=[%s]";
 
 
     @BeforeEach
@@ -57,7 +62,7 @@ public class AppTest {
         var url = new Url(URL_SIMPLE, Time.getTime());
         UrlRepository.save(url);
         JavalinTest.test(app, (server, client) -> {
-            var requestBody = String.format(URL_FOR_PASTING, URL_SIMPLE);
+            var requestBody = String.format(URL_WRAPPER, URL_SIMPLE);
             var response = client.post(NamedRoutes.urlsPath(), requestBody);
             assertThat(response.code()).isEqualTo(200);
             assertThat(response.body().string().contains(URL_SIMPLE));
@@ -66,11 +71,21 @@ public class AppTest {
     }
 
     @Test
+    public void testCreateInaccurateUrl() {
+        JavalinTest.test(app, (server, client) -> {
+            var requestBody = String.format(URL_WRAPPER, "   hTtPs://ExAmPle.COM...  ");
+            var response = client.post(NamedRoutes.urlsPath(), requestBody);
+            assertThat(response.code()).isEqualTo(200);
+            assertThat(response.body().string().contains(URL_SIMPLE));
+        });
+    }
+
+    @Test
     public void testCreateUrlOnlyDomainProtocolAndPort() throws SQLException {
         var url = new Url(URL_WITH_PORT, Time.getTime());
         UrlRepository.save(url);
         JavalinTest.test(app, (server, client) -> {
-            var requestBody = String.format(URL_FOR_PASTING, URL_LONG);
+            var requestBody = String.format(URL_WRAPPER, URL_LONG);
             var response = client.post(NamedRoutes.urlsPath(), requestBody);
             assertThat(response.code()).isEqualTo(200);
             assertThat(response.body().string().contains(URL_WITH_PORT));
@@ -81,7 +96,7 @@ public class AppTest {
     @Test
     public void testCreateIncorrectUrl() {
         JavalinTest.test(app, (server, client) -> {
-            var requestBody = String.format(URL_FOR_PASTING, URL_INCORRECT);
+            var requestBody = String.format(URL_WRAPPER, URL_INCORRECT);
             var response = client.post(NamedRoutes.urlsPath(), requestBody);
             assertThat(response.code()).isEqualTo(200);
             assertThat(response.body().string()).contains(
@@ -108,5 +123,37 @@ public class AppTest {
             );
             assertThat(UrlRepository.getEntities()).hasSize(1);
         });
+    }
+
+    @Test
+    public void testNotFoundUrl() {
+        JavalinTest.test(app, (server, client) -> {
+            var response = client.get(NamedRoutes.urlPath("9999999999"));
+            assertThat(response.code()).isEqualTo(404);
+        });
+    }
+
+    @Test
+    public void testUrlNormalizer() throws URISyntaxException, MalformedURLException {
+        var url = new URI(URL_LONG).toURL();
+        assertThat(NormalizedUrl.getNormalizedUrl(url)).isEqualTo(URL_WITH_PORT);
+    }
+
+    @Test
+    public void testFormattedCreatedAt() {
+        var time = Time.getTime();
+        var simpleTime = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+        assertThat(Time.getSimpleTime(time)).isEqualTo(simpleTime.format(time));
+    }
+
+    @Test
+    public void testFindUrlByNameAndIsUrlExists() throws SQLException {
+        var time = Time.getTime();
+        var url = new Url(URL_SIMPLE, time);
+        assertThat(UrlRepository.findUrlByName(URL_SIMPLE)).isNull();
+        assertThat(UrlRepository.isUrlExists(URL_SIMPLE)).isFalse();
+        UrlRepository.save(url);
+        assertThat(UrlRepository.findUrlByName(URL_SIMPLE).getName()).isEqualTo(url.getName());
+        assertThat(UrlRepository.isUrlExists(URL_SIMPLE)).isTrue();
     }
 }

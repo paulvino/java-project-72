@@ -8,7 +8,6 @@ public class NormalizedUrl {
         var colonsAndSlashes = "://";
         var host = url.getHost();
         var port = url.getPort();
-
         return port != -1 ? protocol + colonsAndSlashes + host + ":" + port : protocol + colonsAndSlashes + host;
     }
 }
