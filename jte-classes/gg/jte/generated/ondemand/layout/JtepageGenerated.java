@@ -4,7 +4,7 @@ import hexlet.code.util.NamedRoutes;
 import hexlet.code.dto.BasePage;
 public final class JtepageGenerated {
 	public static final String JTE_NAME = "layout/page.jte";
-	public static final int[] JTE_LINE_INFO = {0,0,1,2,4,4,4,24,24,24,24,24,24,24,24,24,24,28,28,28,28,28,28,28,28,28,31,31,31,31,31,31,31,31,31,39,39,40,40,40,40,41,41,41,45,45,49,49,49,70,70,70,4,5,6,6,6,6};
+	public static final int[] JTE_LINE_INFO = {0,0,1,2,4,4,4,24,24,24,24,24,24,24,24,24,24,28,28,28,28,28,28,28,28,28,31,31,31,31,31,31,31,31,31,39,39,40,40,40,40,41,41,41,50,50,54,54,54,75,75,75,4,5,6,6,6,6};
 	public static void render(gg.jte.html.HtmlTemplateOutput jteOutput, gg.jte.html.HtmlInterceptor jteHtmlInterceptor, Content content, BasePage page, Content header) {
 		jteOutput.writeContent("\n<!doctype html>\n<html lang=\"en\">\n    <head>\n        <meta charset=\"utf-8\" />\n        <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n        <link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css\"\n              rel=\"stylesheet\"\n              integrity=\"sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN\"\n              crossorigin=\"anonymous\">\n        <title>project_72</title>\n    </head>\n\n    <body>\n        <div class=\"bg-body-tertiary text-white vh-100\" data-bs-theme=\"dark\">\n            <nav class=\"navbar navbar-expand-lg bg-dark text-white\" data-bs-theme=\"dark\">\n                <div class=\"container-fluid\">\n                    <a class=\"navbar-brand\"");
 		var __jte_html_attribute_0 = NamedRoutes.rootPath();
@@ -42,7 +42,7 @@ public final class JtepageGenerated {
 			jteOutput.writeContent(" alert-dismissible fade show\" role=\"alert\">\n                        ");
 			jteOutput.setContext("div", null);
 			jteOutput.writeUserContent(page.getFlash());
-			jteOutput.writeContent("\n                            <button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\">\n                            </button>\n                    </div>\n                ");
+			jteOutput.writeContent("\n                            <button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\">\n                            </button>\n                    </div>\n\n                    <div class=\"alert alert-warning alert-dismissible fade show\" role=\"alert\">\n                        <strong>Holy guacamole!</strong> You should check in on some of those fields below.\n                        <button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>\n                    </div>\n                ");
 		}
 		jteOutput.writeContent("\n            </div>\n\n        <main>\n            ");
 		jteOutput.setContext("main", null);

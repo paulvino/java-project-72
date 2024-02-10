@@ -3,17 +3,12 @@
 @param BasePage page
 
 @template.layout.page(
+page = page,
 content = @`
     <form action="${NamedRoutes.urlsPath()}" method="post">
         <div>
             <div class="container">
                 <div class="row justify-content-center">
-
-                    @if (page != null)
-                        <div class="alert alert-${page.getFlashType()}" role="alert">
-                            ${page.getFlash()}
-                        </div>
-                    @endif
 
                     <div class="col-10">
                         <h1 class="display-3">Анализатор страниц</h1>
