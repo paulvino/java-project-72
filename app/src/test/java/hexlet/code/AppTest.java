@@ -18,6 +18,8 @@ import org.junit.jupiter.api.Test;
 import io.javalin.Javalin;
 import io.javalin.testtools.JavalinTest;
 
+import javax.print.DocFlavor;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AppTest {
@@ -105,6 +107,23 @@ public class AppTest {
                     "<a href=\"https://ru.wikipedia.org/wiki/Поисковая_оптимизация\">SEO</a>",
                     "пригодность");
             assertThat(UrlRepository.getEntities()).hasSize(0);
+        });
+    }
+
+    @Test
+    public void testCreateExistingUrl() throws SQLException {
+        var url = new Url(URL_SIMPLE, Time.getTime());
+        UrlRepository.save(url);
+        JavalinTest.test(app, (server, client) -> {
+            var requestBody = String.format(URL_WRAPPER, URL_SIMPLE);
+            var response = client.post(NamedRoutes.urlsPath(), requestBody);
+            assertThat(response.code()).isEqualTo(200);
+            assertThat(response.body().string().contains(URL_SIMPLE));
+            assertThat(UrlRepository.getEntities()).hasSize(1);
+
+            var response2 = client.post(NamedRoutes.urlsPath(), requestBody);
+            assertThat(response2.code()).isEqualTo(200);
+            assertThat(UrlRepository.getEntities()).hasSize(1);
         });
     }
 
