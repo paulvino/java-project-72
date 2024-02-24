@@ -1,3 +1,4 @@
+@import hexlet.code.util.NamedRoutes
 @import hexlet.code.dto.urls.UrlPage
 @param UrlPage page
 
@@ -8,7 +9,7 @@ content = @`
         <div class="row justify-content-center">
             <h3 class="display-5">Сайт: ${page.getName()}</h3>
                 <table class="table table-bordered table-hover mt-3">
-                    <thread>
+                    <thead>
                         <tbody>
                             <tr>
                                 <td>ID</td>
@@ -23,16 +24,16 @@ content = @`
                                 <td>${page.getFormattedCreatedAt()}</td>
                             </tr>
                         </tbody>
-                    </thread>
+                    </thead>
                 </table>
 
             <h4 class="display-5 mt-5">Проверки:</h4>
 
-<%--            <form method="post" action="${}"> --%><%--будет добавлена переадресация на проверку--%>
+            <form method="post" action="${NamedRoutes.urlChecksPath(page.getId())}">
                 <div class="justify-content-md-end mt-3">
                     <button type="submit" class="btn btn-primary">Запустить проверку</button>
                 </div>
-<%--            </form>--%>
+            </form>
 
             <table class="table table-bordered table-hover mt-4">
                 <thead>
@@ -45,6 +46,18 @@ content = @`
                         <th scope="col">Дата проверки</th>
                     </tr>
                 </thead>
+                <tbody>
+                    @for(var urlCheck: page.getUrlChecks())
+                        <tr>
+                            <td>${urlCheck.getId()}</td>
+                            <td>${urlCheck.getStatusCode()}</td>
+                            <td>${urlCheck.getTitle()}</td>
+                            <td>${urlCheck.getH1()}</td>
+                            <td>${urlCheck.getDescription()}</td>
+                            <td>${urlCheck.getFormattedCreatedAt()}</td>
+                        </tr>
+                    @endfor
+                </tbody>
             </table>
         </div>
     </div>

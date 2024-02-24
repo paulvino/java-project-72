@@ -27,8 +27,12 @@ content = @`
                             <td>
                                 <a href="${NamedRoutes.urlPath(url.getId().toString())}">${url.getName()}</a>
                             </td>
-                            <td></td>
-                            <td></td>
+                            <td>
+                                ${page.getChecks().isEmpty() || page.getChecks().get(url.getId()) == null ? "" : page.getChecks().get(url.getId()).getFormattedCreatedAt()}
+                            </td>
+                            <td>
+                                ${page.getChecks().isEmpty() || page.getChecks().get(url.getId()) == null ? "" : page.getChecks().get(url.getId()).getStatusCode().toString()}
+                            </td>
                         </tr>
                     @endfor
                     </tbody>

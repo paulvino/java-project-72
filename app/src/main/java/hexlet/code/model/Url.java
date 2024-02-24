@@ -11,11 +11,7 @@ import java.sql.Timestamp;
 @ToString
 public class Url {
     private Long id;
-
-    @ToString.Include
     private String name;
-
-    @ToString.Include
     private Timestamp createdAt;
 
     public Url(String name, Timestamp createdAt) {

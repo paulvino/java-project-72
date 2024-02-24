@@ -10,15 +10,13 @@ import java.text.SimpleDateFormat;
 import hexlet.code.model.Url;
 import hexlet.code.repository.UrlRepository;
 import hexlet.code.util.NamedRoutes;
-import hexlet.code.util.NormalizedUrl;
+import hexlet.code.util.NormalizedData;
 import hexlet.code.util.Time;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import io.javalin.Javalin;
 import io.javalin.testtools.JavalinTest;
-
-import javax.print.DocFlavor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -155,7 +153,7 @@ public class AppTest {
     @Test
     public void testUrlNormalizer() throws URISyntaxException, MalformedURLException {
         var url = new URI(URL_LONG).toURL();
-        assertThat(NormalizedUrl.getNormalizedUrl(url)).isEqualTo(URL_WITH_PORT);
+        assertThat(NormalizedData.getNormalizedUrl(url)).isEqualTo(URL_WITH_PORT);
     }
 
     @Test

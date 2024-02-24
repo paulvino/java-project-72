@@ -3,9 +3,10 @@ package hexlet.code.controller;
 import hexlet.code.dto.urls.UrlPage;
 import hexlet.code.dto.urls.UrlsPage;
 import hexlet.code.model.Url;
+import hexlet.code.repository.UrlCheckRepository;
 import hexlet.code.repository.UrlRepository;
 import hexlet.code.util.NamedRoutes;
-import hexlet.code.util.NormalizedUrl;
+import hexlet.code.util.NormalizedData;
 import io.javalin.http.Context;
 import io.javalin.http.NotFoundResponse;
 
@@ -22,7 +23,8 @@ public class UrlController {
 
     public static void index(Context ctx) throws SQLException {
         var urls = UrlRepository.getEntities();
-        var page = new UrlsPage(urls);
+        var checks = NormalizedData.getListOfLastChecks();
+        var page = new UrlsPage(urls, checks);
         page.setFlash(ctx.consumeSessionAttribute("flash"));
         page.setFlashType(ctx.consumeSessionAttribute("flash-type"));
         ctx.render("urls/index.jte", Collections.singletonMap("page", page));
@@ -38,7 +40,7 @@ public class UrlController {
 
         try {
             var addressAsUrl = new URI(incomingAddress).toURL();
-            normalizedUrl = NormalizedUrl.getNormalizedUrl(addressAsUrl);
+            normalizedUrl = NormalizedData.getNormalizedUrl(addressAsUrl);
         } catch (MalformedURLException | URISyntaxException | IllegalArgumentException e) {
             ctx.sessionAttribute("flash", "Некорректный URL");
             ctx.sessionAttribute("flash-type", "warning");
@@ -63,7 +65,8 @@ public class UrlController {
         var id = ctx.pathParamAsClass("id", Long.class).get();
         var url = UrlRepository.find(Long.valueOf(id))
                 .orElseThrow(() -> new NotFoundResponse("Url with id = " + id + " not found"));
-        var page = new UrlPage(id, url.getName(), url.getCreatedAt());
+        var urlChecks = UrlCheckRepository.getEntitiesById(id);
+        var page = new UrlPage(id, url.getName(), url.getCreatedAt(), urlChecks);
         page.setFlash(ctx.consumeSessionAttribute("flash"));
         page.setFlashType(ctx.consumeSessionAttribute("flash-type"));
         ctx.render("urls/show.jte", Collections.singletonMap("page", page));
