@@ -1,38 +1,75 @@
 package hexlet.code;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.util.StringJoiner;
 
 import hexlet.code.model.Url;
+import hexlet.code.repository.UrlCheckRepository;
 import hexlet.code.repository.UrlRepository;
 import hexlet.code.util.NamedRoutes;
 import hexlet.code.util.NormalizedData;
 import hexlet.code.util.Time;
+import okhttp3.mockwebserver.MockWebServer;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import io.javalin.Javalin;
 import io.javalin.testtools.JavalinTest;
+import okhttp3.mockwebserver.MockResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AppTest {
 
     private static Javalin app;
+    private static MockWebServer mockServer;
     private static final String URL_SIMPLE = "https://example.com";
     private static final String URL_WITH_PORT = "https://example.com:8080";
-    private static final String URL_LONG = "https://example.com:8080/example/unnesessary/long/url/address";
+    private static final String URL_COMPLEX = "https://example.com:8080/example/unnesessary/long/url/address";
     private static final String URL_INCORRECT = "123QWE";
     private static final String URL_WRAPPER = "url=[%s]";
+    private static String urlName;
+    private static final String HTML_PATH = "src/test/resources/index.html";
 
+
+
+    @BeforeAll
+    public static void beforeAllTests() throws IOException {
+        mockServer = new MockWebServer();
+        urlName = mockServer.url("/").toString();
+        var mockResponse = new MockResponse().setBody(getContentFromHtml());
+        mockServer.enqueue(mockResponse);
+    }
 
     @BeforeEach
     public final void setUp() throws IOException, SQLException {
         app = App.getApp();
+    }
+
+    @AfterAll
+    public static void afterAllTests() throws IOException {
+        mockServer.shutdown();
+    }
+
+    public static String getContentFromHtml() throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(HTML_PATH));
+        String lineOfFile = reader.readLine();
+        var result = new StringJoiner("\n");
+
+        while (lineOfFile != null) {
+            result.add(lineOfFile);
+            lineOfFile = reader.readLine();
+        }
+        return result.toString();
     }
 
     @Test
@@ -85,7 +122,7 @@ public class AppTest {
         var url = new Url(URL_WITH_PORT, Time.getTime());
         UrlRepository.save(url);
         JavalinTest.test(app, (server, client) -> {
-            var requestBody = String.format(URL_WRAPPER, URL_LONG);
+            var requestBody = String.format(URL_WRAPPER, URL_COMPLEX);
             var response = client.post(NamedRoutes.urlsPath(), requestBody);
             assertThat(response.code()).isEqualTo(200);
             assertThat(response.body().string().contains(URL_WITH_PORT));
@@ -151,8 +188,29 @@ public class AppTest {
     }
 
     @Test
+    public void testCheckUrl() throws IOException, SQLException {
+        var url = new Url(urlName, Time.getTime());
+        UrlRepository.save(url);
+
+        JavalinTest.test(app, (server1, client) -> {
+            var response = client.post(NamedRoutes.urlChecksPath(url.getId()));
+            assertThat(response.code()).isEqualTo(200);
+            var urlCheck = UrlCheckRepository.getLastCheck(url.getId()).get();
+            var id = String.valueOf(urlCheck.getId());
+            var statusCode = String.valueOf(urlCheck.getStatusCode());
+            var title = urlCheck.getTitle();
+            var h1 = urlCheck.getH1();
+            var description = urlCheck.getDescription();
+
+            assertThat(title).isEqualTo("This is a Title =^_^=");
+            assertThat(h1).isEqualTo("This is kinda header");
+            assertThat(description).isEqualTo("some description text for tests");
+        });
+    }
+
+    @Test
     public void testUrlNormalizer() throws URISyntaxException, MalformedURLException {
-        var url = new URI(URL_LONG).toURL();
+        var url = new URI(URL_COMPLEX).toURL();
         assertThat(NormalizedData.getNormalizedUrl(url)).isEqualTo(URL_WITH_PORT);
     }
 
