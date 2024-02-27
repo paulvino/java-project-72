@@ -88,7 +88,6 @@ public class App {
             config.plugins.enableDevLogging();
         });
 
-
         JavalinJte.init(createTemplateEngine());
 
         app.get(NamedRoutes.rootPath(), RootController::index);

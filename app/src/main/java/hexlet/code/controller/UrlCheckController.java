@@ -32,17 +32,17 @@ public class UrlCheckController {
             var h1 = h1Element == null ? "" : h1Element.text();
 
             var descriptionElement = doc.selectFirst("meta[name=description]");
-            var descpiption = descriptionElement == null ? "" : descriptionElement.attr("content");
+            var description = descriptionElement == null ? "" : descriptionElement.attr("content");
 
             var createdAt = Time.getTime();
 
-            var urlCheck = new UrlCheck(statusCode, title, h1, descpiption, createdAt, urlId);
+            var urlCheck = new UrlCheck(statusCode, title, h1, description, createdAt, urlId);
             UrlCheckRepository.save(urlCheck);
 
             ctx.sessionAttribute("flash", "URL проверен");
             ctx.sessionAttribute("flash-type", "success");
         } catch (Exception e) {
-            ctx.sessionAttribute("flash", "Некорректный URL / проверка не удалась");
+            ctx.sessionAttribute("flash", "Некорректный URL или проверка не удалась");
             ctx.sessionAttribute("flash-type", "warning");
         }
 

@@ -20,7 +20,6 @@ import static hexlet.code.repository.UrlRepository.isUrlExists;
 import static hexlet.code.util.Time.getTime;
 
 public class UrlController {
-
     public static void index(Context ctx) throws SQLException {
         var urls = UrlRepository.getEntities();
         var checks = NormalizedData.getListOfLastChecks();
