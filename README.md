@@ -6,4 +6,7 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/52143de9962b7aa475b1/maintainability)](https://codeclimate.com/github/paulvino/java-project-72/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/52143de9962b7aa475b1/test_coverage)](https://codeclimate.com/github/paulvino/java-project-72/test_coverage)
 
-[Click here](https://project-72-5hl1.onrender.com/) to start analyzing!
+### Description:
+Fast, simple and pretty web-application for checking a website for SEO-suitability.
+
+### [Click here](https://project-72-5hl1.onrender.com/) to start analyzing!

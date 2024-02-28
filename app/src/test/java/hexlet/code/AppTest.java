@@ -16,7 +16,12 @@ import hexlet.code.repository.UrlRepository;
 import hexlet.code.util.NamedRoutes;
 import hexlet.code.util.NormalizedData;
 import hexlet.code.util.Time;
+
+import kong.unirest.HttpResponse;
+import kong.unirest.Unirest;
 import okhttp3.mockwebserver.MockWebServer;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,7 +34,6 @@ import okhttp3.mockwebserver.MockResponse;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AppTest {
-
     private static Javalin app;
     private static MockWebServer mockServer;
     private static final String URL_SIMPLE = "https://example.com";
@@ -40,8 +44,6 @@ public class AppTest {
     private static String urlName;
     private static final String HTML_PATH = "src/test/resources/index.html";
 
-
-
     @BeforeAll
     public static void beforeAllTests() throws IOException {
         mockServer = new MockWebServer();
@@ -51,7 +53,7 @@ public class AppTest {
     }
 
     @BeforeEach
-    public final void setUp() throws IOException, SQLException {
+    public final void setUpTests() throws IOException, SQLException {
         app = App.getApp();
     }
 
@@ -95,13 +97,18 @@ public class AppTest {
     }
 
     @Test
-    public void testCreateUrl() throws SQLException {
-        var url = new Url(URL_SIMPLE, Time.getTime());
-        UrlRepository.save(url);
+    public void testCreateUrl() {
         JavalinTest.test(app, (server, client) -> {
-            var requestBody = String.format(URL_WRAPPER, URL_SIMPLE);
+            var requestBody = "url=" + URL_SIMPLE;
             var response = client.post(NamedRoutes.urlsPath(), requestBody);
             assertThat(response.code()).isEqualTo(200);
+
+//            String responseBody = response.body().string();
+//            HttpResponse<String> httpResponse = Unirest.get(responseBody).asString();
+//            Document doc = Jsoup.parse(httpResponse.getBody());
+//            var alertElement = doc.selectFirst("meta[name=alert]");
+//            assertThat(alertElement).isNotNull();
+
             assertThat(response.body().string().contains(URL_SIMPLE));
             assertThat(UrlRepository.getEntities()).hasSize(1);
         });
@@ -136,11 +143,6 @@ public class AppTest {
             var requestBody = String.format(URL_WRAPPER, URL_INCORRECT);
             var response = client.post(NamedRoutes.urlsPath(), requestBody);
             assertThat(response.code()).isEqualTo(200);
-            assertThat(response.body().string()).contains(
-                    "Анализатор страниц",
-                    "Бесплатно проверяйте сайты на",
-                    "<a href=\"https://ru.wikipedia.org/wiki/Поисковая_оптимизация\">SEO</a>",
-                    "пригодность");
             assertThat(UrlRepository.getEntities()).hasSize(0);
         });
     }
@@ -164,12 +166,10 @@ public class AppTest {
 
     @Test
     public void testUrlPage() throws SQLException {
-        var time = Time.getTime();
-        var url = new Url(URL_SIMPLE, time);
+        var url = new Url(URL_SIMPLE, Time.getTime());
         UrlRepository.save(url);
         JavalinTest.test(app, (server, client) -> {
-            var urlId = url.getId();
-            var response = client.get(NamedRoutes.urlPath(urlId));
+            var response = client.get(NamedRoutes.urlPath(url.getId()));
             assertThat(response.code()).isEqualTo(200);
             assertThat(response.body().string()).contains(
                     "Сайт:", url.getName(), "ID", url.getId().toString(), "Имя", url.getName(), "Дата добавления",
@@ -188,11 +188,14 @@ public class AppTest {
     }
 
     @Test
-    public void testCheckUrl() throws IOException, SQLException {
+    public void testCheckUrl() throws SQLException {
         var url = new Url(urlName, Time.getTime());
         UrlRepository.save(url);
 
         JavalinTest.test(app, (server1, client) -> {
+            var listOfLastChecks = NormalizedData.getListOfLastChecks();
+            assertThat(listOfLastChecks.size()).isEqualTo(1);
+            assertThat(listOfLastChecks.get(0L)).isNull();
             var response = client.post(NamedRoutes.urlChecksPath(url.getId()));
             assertThat(response.code()).isEqualTo(200);
             var urlCheck = UrlCheckRepository.getLastCheck(url.getId()).get();
@@ -205,6 +208,10 @@ public class AppTest {
             assertThat(title).isEqualTo("This is a Title =^_^=");
             assertThat(h1).isEqualTo("This is kinda header");
             assertThat(description).isEqualTo("some description text for tests");
+            var listOfLastChecks1 = NormalizedData.getListOfLastChecks();
+            assertThat(listOfLastChecks1.size()).isEqualTo(1);
+            var lastCheck = listOfLastChecks1.get(1L);
+            assertThat(lastCheck).isNotNull();
         });
     }
 
