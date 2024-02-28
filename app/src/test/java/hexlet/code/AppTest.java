@@ -102,13 +102,6 @@ public class AppTest {
             var requestBody = "url=" + URL_SIMPLE;
             var response = client.post(NamedRoutes.urlsPath(), requestBody);
             assertThat(response.code()).isEqualTo(200);
-
-//            String responseBody = response.body().string();
-//            HttpResponse<String> httpResponse = Unirest.get(responseBody).asString();
-//            Document doc = Jsoup.parse(httpResponse.getBody());
-//            var alertElement = doc.selectFirst("meta[name=alert]");
-//            assertThat(alertElement).isNotNull();
-
             assertThat(response.body().string().contains(URL_SIMPLE));
             assertThat(UrlRepository.getEntities()).hasSize(1);
         });
