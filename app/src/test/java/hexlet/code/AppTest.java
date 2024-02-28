@@ -17,11 +17,7 @@ import hexlet.code.util.NamedRoutes;
 import hexlet.code.util.NormalizedData;
 import hexlet.code.util.Time;
 
-import kong.unirest.HttpResponse;
-import kong.unirest.Unirest;
 import okhttp3.mockwebserver.MockWebServer;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
