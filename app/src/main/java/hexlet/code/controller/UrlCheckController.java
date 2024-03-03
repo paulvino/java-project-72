@@ -4,7 +4,6 @@ import hexlet.code.model.UrlCheck;
 import hexlet.code.repository.UrlCheckRepository;
 import hexlet.code.repository.UrlRepository;
 import hexlet.code.util.NamedRoutes;
-import hexlet.code.util.Time;
 import io.javalin.http.Context;
 import io.javalin.http.NotFoundResponse;
 import kong.unirest.HttpResponse;
@@ -34,9 +33,7 @@ public class UrlCheckController {
             var descriptionElement = doc.selectFirst("meta[name=description]");
             var description = descriptionElement == null ? "" : descriptionElement.attr("content");
 
-            var createdAt = Time.getTime();
-
-            var urlCheck = new UrlCheck(statusCode, title, h1, description, createdAt, urlId);
+            var urlCheck = new UrlCheck(statusCode, title, h1, description, urlId);
             UrlCheckRepository.save(urlCheck);
 
             ctx.sessionAttribute("flash", "URL проверен");

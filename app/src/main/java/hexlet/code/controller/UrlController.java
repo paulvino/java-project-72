@@ -17,7 +17,6 @@ import java.sql.SQLException;
 import java.util.Collections;
 
 import static hexlet.code.repository.UrlRepository.isUrlExists;
-import static hexlet.code.util.Time.getTime;
 
 public class UrlController {
     public static void index(Context ctx) throws SQLException {
@@ -52,7 +51,7 @@ public class UrlController {
             ctx.sessionAttribute("flash-type", "info");
             ctx.redirect(NamedRoutes.urlsPath());
         } else {
-            var url = new Url(normalizedUrl, getTime());
+            var url = new Url(normalizedUrl);
             UrlRepository.save(url);
             ctx.sessionAttribute("flash", "URL успешно добавлен");
             ctx.sessionAttribute("flash-type", "success");
@@ -64,7 +63,7 @@ public class UrlController {
         var id = ctx.pathParamAsClass("id", Long.class).get();
         var url = UrlRepository.find(Long.valueOf(id))
                 .orElseThrow(() -> new NotFoundResponse("Url with id = " + id + " not found"));
-        var urlChecks = UrlCheckRepository.getEntitiesById(id);
+        var urlChecks = UrlCheckRepository.getEntitiesByUrlId(id);
         var page = new UrlPage(id, url.getName(), url.getCreatedAt(), urlChecks);
         page.setFlash(ctx.consumeSessionAttribute("flash"));
         page.setFlashType(ctx.consumeSessionAttribute("flash-type"));

@@ -1,6 +1,7 @@
 package hexlet.code.repository;
 
 import hexlet.code.model.UrlCheck;
+import hexlet.code.util.Time;
 
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -19,7 +20,7 @@ public class UrlCheckRepository extends BaseRepository {
             preparedStatement.setString(3, urlCheck.getH1());
             preparedStatement.setString(4, urlCheck.getTitle());
             preparedStatement.setString(5, urlCheck.getDescription());
-            preparedStatement.setTimestamp(6, urlCheck.getCreatedAt());
+            preparedStatement.setTimestamp(6, Time.getTime());
             preparedStatement.executeUpdate();
 
             var generatedKeys = preparedStatement.getGeneratedKeys();
@@ -31,7 +32,7 @@ public class UrlCheckRepository extends BaseRepository {
         }
     }
 
-    public static List<UrlCheck> getEntitiesById(Long urlId) throws SQLException {
+    public static List<UrlCheck> getEntitiesByUrlId(Long urlId) throws SQLException {
         var sql = "SELECT * FROM url_checks WHERE url_id = ? ORDER BY id DESC";
         try (var conn = dataSource.getConnection();
                 var preparedStatement = conn.prepareStatement(sql)) {
@@ -46,7 +47,8 @@ public class UrlCheckRepository extends BaseRepository {
                 var title = resultSet.getString("title");
                 var description = resultSet.getString("description");
                 var createdAt = resultSet.getTimestamp("created_at");
-                var urlCheck = new UrlCheck(statusCode, title, h1, description, createdAt, id);
+                var urlCheck = new UrlCheck(statusCode, title, h1, description, id);
+                urlCheck.setCreatedAt(createdAt);
                 urlCheck.setId(id);
                 result.add(urlCheck);
             }
@@ -68,8 +70,9 @@ public class UrlCheckRepository extends BaseRepository {
                 var title = resultSet.getString("title");
                 var description = resultSet.getString("description");
                 var createdAt = resultSet.getTimestamp("created_at");
-                var urlCheck = new UrlCheck(statusCode, title, h1, description, createdAt, id);
+                var urlCheck = new UrlCheck(statusCode, title, h1, description, id);
                 urlCheck.setId(id);
+                urlCheck.setCreatedAt(createdAt);
                 return Optional.of(urlCheck);
             }
             return Optional.empty();

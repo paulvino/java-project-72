@@ -97,9 +97,11 @@ public class AppTest {
         JavalinTest.test(app, (server, client) -> {
             var requestBody = "url=" + URL_SIMPLE;
             var response = client.post(NamedRoutes.urlsPath(), requestBody);
+            var urlsList = UrlRepository.getEntities();
             assertThat(response.code()).isEqualTo(200);
             assertThat(response.body().string().contains(URL_SIMPLE));
-            assertThat(UrlRepository.getEntities()).hasSize(1);
+            assertThat(urlsList).hasSize(1);
+            assertThat(urlsList.get(0).getName()).isEqualTo(URL_SIMPLE);
         });
     }
 
@@ -115,7 +117,7 @@ public class AppTest {
 
     @Test
     public void testCreateUrlOnlyDomainProtocolAndPort() throws SQLException {
-        var url = new Url(URL_WITH_PORT, Time.getTime());
+        var url = new Url(URL_WITH_PORT);
         UrlRepository.save(url);
         JavalinTest.test(app, (server, client) -> {
             var requestBody = String.format(URL_WRAPPER, URL_COMPLEX);
@@ -138,7 +140,7 @@ public class AppTest {
 
     @Test
     public void testCreateExistingUrl() throws SQLException {
-        var url = new Url(URL_SIMPLE, Time.getTime());
+        var url = new Url(URL_SIMPLE);
         UrlRepository.save(url);
         JavalinTest.test(app, (server, client) -> {
             var requestBody = String.format(URL_WRAPPER, URL_SIMPLE);
@@ -155,14 +157,14 @@ public class AppTest {
 
     @Test
     public void testUrlPage() throws SQLException {
-        var url = new Url(URL_SIMPLE, Time.getTime());
+        var url = new Url(URL_SIMPLE);
         UrlRepository.save(url);
         JavalinTest.test(app, (server, client) -> {
             var response = client.get(NamedRoutes.urlPath(url.getId()));
             assertThat(response.code()).isEqualTo(200);
             assertThat(response.body().string()).contains(
                     "Сайт:", url.getName(), "ID", url.getId().toString(), "Имя", url.getName(), "Дата добавления",
-                    Time.getSimpleTime(url.getCreatedAt()), "Проверки:"
+                    "Проверки:"
             );
             assertThat(UrlRepository.getEntities()).hasSize(1);
         });
@@ -178,7 +180,7 @@ public class AppTest {
 
     @Test
     public void testCheckUrl() throws SQLException {
-        var url = new Url(urlName, Time.getTime());
+        var url = new Url(urlName);
         UrlRepository.save(url);
 
         JavalinTest.test(app, (server1, client) -> {
@@ -219,8 +221,7 @@ public class AppTest {
 
     @Test
     public void testFindUrlByNameAndIsUrlExists() throws SQLException {
-        var time = Time.getTime();
-        var url = new Url(URL_SIMPLE, time);
+        var url = new Url(URL_SIMPLE);
         assertThat(UrlRepository.findUrlByName(URL_SIMPLE)).isNull();
         assertThat(UrlRepository.isUrlExists(URL_SIMPLE)).isFalse();
         UrlRepository.save(url);

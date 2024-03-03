@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 import hexlet.code.model.Url;
+import hexlet.code.util.Time;
 
 public class UrlRepository extends BaseRepository {
     public static void save(Url url) throws SQLException {
@@ -14,7 +15,7 @@ public class UrlRepository extends BaseRepository {
         try (var conn = dataSource.getConnection();
                 var preparedStatement = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, url.getName());
-            preparedStatement.setTimestamp(2, url.getCreatedAt());
+            preparedStatement.setTimestamp(2, Time.getTime());
             preparedStatement.executeUpdate();
 
             var generatedKeys = preparedStatement.getGeneratedKeys();
@@ -35,8 +36,9 @@ public class UrlRepository extends BaseRepository {
             if (resultSet.next()) {
                 var name = resultSet.getString("name");
                 var createdAt = resultSet.getTimestamp("created_at");
-                var url = new Url(name, createdAt);
+                var url = new Url(name);
                 url.setId(id);
+                url.setCreatedAt(createdAt);
                 return Optional.of(url);
             }
             return Optional.empty();
@@ -54,8 +56,9 @@ public class UrlRepository extends BaseRepository {
                 var id = resultSet.getLong("id");
                 var name = resultSet.getString("name");
                 var createdAt = resultSet.getTimestamp("created_at");
-                var url = new Url(name, createdAt);
+                var url = new Url(name);
                 url.setId(id);
+                url.setCreatedAt(createdAt);
                 result.add(url);
             }
             return result;
@@ -71,8 +74,9 @@ public class UrlRepository extends BaseRepository {
             if (resultSet.next()) {
                 var id = resultSet.getLong("id");
                 var createdAt = resultSet.getTimestamp("created_at");
-                var url = new Url(name, createdAt);
+                var url = new Url(name);
                 url.setId(id);
+                url.setCreatedAt(createdAt);
                 return url;
             }
             return null;
