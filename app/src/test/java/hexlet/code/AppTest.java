@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.StringJoiner;
 
 import hexlet.code.model.Url;
+import hexlet.code.repository.BaseRepository;
 import hexlet.code.repository.UrlCheckRepository;
 import hexlet.code.repository.UrlRepository;
 import hexlet.code.util.NamedRoutes;
@@ -18,10 +19,7 @@ import hexlet.code.util.NormalizedData;
 import hexlet.code.util.Time;
 
 import okhttp3.mockwebserver.MockWebServer;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import io.javalin.Javalin;
 import io.javalin.testtools.JavalinTest;
@@ -51,6 +49,13 @@ public class AppTest {
     @BeforeEach
     public final void setUpTests() throws IOException, SQLException {
         app = App.getApp();
+    }
+
+    @AfterEach
+    public final void closeConnection() {
+        if (BaseRepository.dataSource != null) {
+            BaseRepository.dataSource.close();
+        }
     }
 
     @AfterAll
