@@ -6,8 +6,6 @@ import lombok.ToString;
 
 import java.sql.Timestamp;
 
-import static hexlet.code.util.Time.getSimpleTime;
-
 @Getter
 @Setter
 @ToString
@@ -26,12 +24,5 @@ public class UrlCheck {
         this.h1 = h1;
         this.description = description;
         this.urlId = urlId;
-    }
-
-    public String getFormattedCreatedAt() {
-        if (createdAt == null) {
-            return "";
-        }
-        return createdAt == null ? "" : getSimpleTime(createdAt);
     }
 }
