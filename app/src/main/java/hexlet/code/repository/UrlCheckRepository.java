@@ -6,8 +6,9 @@ import hexlet.code.util.Time;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
 public class UrlCheckRepository extends BaseRepository {
     public static void save(UrlCheck urlCheck) throws SQLException {
@@ -56,14 +57,13 @@ public class UrlCheckRepository extends BaseRepository {
         }
     }
 
-    public static Optional<UrlCheck> getLastCheck(Long urlId) throws SQLException {
-        var sql = "SELECT * FROM url_checks WHERE url_id = ? ORDER BY created_at DESC LIMIT 1";
+    public static Map<Long, UrlCheck> getListOfLastChecks() throws SQLException {
+        var sql = "SELECT DISTINCT ON (url_id) * from url_checks ORDER BY url_id, id DESC";
         try (var conn = dataSource.getConnection();
-             var preparedStatement = conn.prepareStatement(sql)) {
-            preparedStatement.setLong(1, urlId);
+            var preparedStatement = conn.prepareStatement(sql)) {
             var resultSet = preparedStatement.executeQuery();
-
-            if (resultSet.next()) {
+            var latestChecks = new HashMap<Long, UrlCheck>();
+            while (resultSet.next()) {
                 var id = resultSet.getLong("id");
                 var statusCode = resultSet.getInt("status_code");
                 var h1 = resultSet.getString("h1");
@@ -71,11 +71,13 @@ public class UrlCheckRepository extends BaseRepository {
                 var description = resultSet.getString("description");
                 var createdAt = resultSet.getTimestamp("created_at");
                 var urlCheck = new UrlCheck(statusCode, title, h1, description, id);
+
                 urlCheck.setId(id);
                 urlCheck.setCreatedAt(createdAt);
-                return Optional.of(urlCheck);
+                latestChecks.put(id, urlCheck);
             }
-            return Optional.empty();
+
+            return latestChecks;
         }
     }
 }

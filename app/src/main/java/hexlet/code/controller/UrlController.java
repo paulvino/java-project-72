@@ -21,7 +21,7 @@ import static hexlet.code.repository.UrlRepository.isUrlExists;
 public class UrlController {
     public static void index(Context ctx) throws SQLException {
         var urls = UrlRepository.getEntities();
-        var checks = NormalizedData.getListOfLastChecks();
+        var checks = UrlCheckRepository.getListOfLastChecks();
         var page = new UrlsPage(urls, checks);
         page.setFlash(ctx.consumeSessionAttribute("flash"));
         page.setFlashType(ctx.consumeSessionAttribute("flash-type"));

@@ -193,12 +193,12 @@ public class AppTest {
         UrlRepository.save(url);
 
         JavalinTest.test(app, (server1, client) -> {
-            var listOfLastChecks = NormalizedData.getListOfLastChecks();
-            assertThat(listOfLastChecks.size()).isEqualTo(1);
+            var listOfLastChecks = UrlCheckRepository.getListOfLastChecks();
+            assertThat(listOfLastChecks.size()).isEqualTo(0);
             assertThat(listOfLastChecks.get(0L)).isNull();
             var response = client.post(NamedRoutes.urlChecksPath(url.getId()));
             assertThat(response.code()).isEqualTo(200);
-            var urlCheck = UrlCheckRepository.getLastCheck(url.getId()).get();
+            var urlCheck = UrlCheckRepository.getListOfLastChecks().get(url.getId());
             var id = String.valueOf(urlCheck.getId());
             var statusCode = String.valueOf(urlCheck.getStatusCode());
             var title = urlCheck.getTitle();
@@ -208,7 +208,7 @@ public class AppTest {
             assertThat(title).isEqualTo("This is a Title =^_^=");
             assertThat(h1).isEqualTo("This is kinda header");
             assertThat(description).isEqualTo("some description text for tests");
-            var listOfLastChecks1 = NormalizedData.getListOfLastChecks();
+            var listOfLastChecks1 = UrlCheckRepository.getListOfLastChecks();
             assertThat(listOfLastChecks1.size()).isEqualTo(1);
             var lastCheck = listOfLastChecks1.get(1L);
             assertThat(lastCheck).isNotNull();
