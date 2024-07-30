@@ -9,4 +9,4 @@
 ### Description:
 Fast, simple and pretty web-application for checking a website for SEO-suitability.
 
-### [Click here](https://project-72-5hl1.onrender.com/) to start analyzing!
+### [Click here](https://java-project-72-tlz6.onrender.com) to start analyzing! (page loading may take some time)
